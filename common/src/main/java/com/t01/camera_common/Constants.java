@@ -62,7 +62,7 @@ public class Constants {
     /**
      * 内存文件中的缓存的大小
      */
-    public static final int MEMORY_SIZE = BUFFER_SIZE * 3;//
+    public static final int MEMORY_SIZE = BUFFER_SIZE * 5;
     /**
      * 内存文件的名称
      */

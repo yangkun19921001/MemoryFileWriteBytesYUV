@@ -14,7 +14,6 @@ import android.widget.ImageView;
 
 import com.t01.camera_common.Constants;
 import com.t01.camera_common.FastYUVtoRGB;
-import com.t01.camera_common.Utils;
 import com.t01.sharevideostream.service.IYuvDataListener;
 import com.t01.sharevideostream.service.LocalService;
 
@@ -48,9 +47,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             LocalService.MyBinder myBinder = (LocalService.MyBinder) binder;
             myBinder.getYuvData(new IYuvDataListener() {
                 @Override
-                public void onYUVData(byte[] mBuffer, int width, int height) {
-                    Log.e(TAG, "收到 YUV 数据大小 " + Utils.getVideoFrameSize(mBuffer.length));
-                    mYuvShow.setImageBitmap(mFastYUVtoRGB.convertYUVtoRGB(mBuffer, width, height));
+                public void onYUVData(byte[] output, int width, int height) {
+//                    Log.e(TAG, "收到 YUV 数据大小 " + Utils.getVideoFrameSize(output.length));
+                    mYuvShow.setImageBitmap(mFastYUVtoRGB.rotaingImageView(90,mFastYUVtoRGB.convertYUVtoRGB(output, width, height)));
                 }
             });
         }
@@ -60,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "-------------------- onServiceDisconnected------------------");
         }
     };
+
+
+
+
 
     @Override
     public void onClick(View v) {

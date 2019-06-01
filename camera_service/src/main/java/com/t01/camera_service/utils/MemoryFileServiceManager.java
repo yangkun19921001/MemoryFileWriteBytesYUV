@@ -20,8 +20,10 @@ import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.t01.camera_common.Constants;
+import com.t01.camera_common.FastYUVtoRGB;
 import com.t01.camera_common.MemoryFileHelper;
 import com.t01.camera_common.Utils;
 import com.t01.camera_common.bean.BufferBean;
@@ -49,6 +51,8 @@ public class MemoryFileServiceManager {
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private WindowManager mWindowManager;
+    private ImageView imageView;
+    private FastYUVtoRGB fastYUVtoRGB;
 
     public static MemoryFileServiceManager getInsta(Context context) {
         MemoryFileServiceManager.context = context.getApplicationContext();
@@ -86,14 +90,14 @@ public class MemoryFileServiceManager {
         Constants.IS_SEND_VIDEO_FRAME = false;
         try {
             context.unbindService(mCameraServiceConnection);
-            sendBroadcast(Constants.ACTION_FEEDBACK,"断开连接");
+            sendBroadcast(Constants.ACTION_FEEDBACK, "断开连接");
             mSurfaceView.getHolder().removeCallback(null);
-            mCamera.setPreviewCallback(null);
+/*            mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
             mCamera.lock();
             mCamera.release();
-            mCamera = null;
-        }catch (Exception e){
+            mCamera = null;*/
+        } catch (Exception e) {
 
         }
     }
@@ -139,7 +143,6 @@ public class MemoryFileServiceManager {
     }
 
 
-
     /**
      * @return 是否给客服端发送数据
      */
@@ -163,7 +166,7 @@ public class MemoryFileServiceManager {
                     //开始写入数据
                     Thread thread = new Thread(new SendVideo(mMemoryFile));
                     thread.start();
-                    sendBroadcast(Constants.ACTION_FEEDBACK,"连接成功");
+                    sendBroadcast(Constants.ACTION_FEEDBACK, "连接成功");
                 } catch (RemoteException ioe) {
                     Log.d(TAG, "handleMessage ------------------ MSG_ADD_EXPORT_MEMORY_FILE - IOException : "
                             + ioe.getMessage());
@@ -212,15 +215,15 @@ public class MemoryFileServiceManager {
         try {
             if (mYUVQueue.size() > 0) {
                 BufferBean mBufferBean = new BufferBean(Constants.BUFFER_SIZE);
+                //读取标志符号
                 memoryFile.readBytes(mBufferBean.isCanRead, 0, 0, 1);
                 //当第一位为 0 的时候，代表客服端已经读取了，可以正常将视频流写入内存中
                 if (mBufferBean.isCanRead[0] == 0) {
-                    memoryFile.readBytes(mBufferBean.mBuffer, 0, 0, mBufferBean.mBuffer.length);
                     //拿到视频流
                     byte[] video = mYUVQueue.poll();
                     if (video != null)
-                    //将视频流写入内存中
-                    memoryFile.writeBytes(video, 0, 1, video.length);
+                        //将视频流写入内存中
+                        memoryFile.writeBytes(video, 0, 0, video.length);
                     //标志位复位，等待客服端读取视频流
                     mBufferBean.isCanRead[0] = 1;
                     memoryFile.writeBytes(mBufferBean.isCanRead, 0, 0, 1);
@@ -231,7 +234,7 @@ public class MemoryFileServiceManager {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            sendBroadcast(Constants.ACTION_FEEDBACK,e.getMessage());
+            sendBroadcast(Constants.ACTION_FEEDBACK, e.getMessage());
         }
     }
 
@@ -257,6 +260,8 @@ public class MemoryFileServiceManager {
              */
             onBackgroup();
         }
+
+        fastYUVtoRGB = new FastYUVtoRGB(context);
     }
 
     /**
@@ -266,6 +271,7 @@ public class MemoryFileServiceManager {
         try {
             //开启悬浮窗
             mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            imageView = new ImageView(context);
             mSurfaceView = new SurfaceView(context);
             int LAYOUT_FLAG;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -281,7 +287,7 @@ public class MemoryFileServiceManager {
                     PixelFormat.TRANSLUCENT
             );
 
-            layoutParams.gravity = Gravity.RIGHT | Gravity.TOP;
+            layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
 
             mWindowManager.addView(mSurfaceView, layoutParams);
             mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -320,7 +326,7 @@ public class MemoryFileServiceManager {
         parameters.setPreviewSize(Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT);
         mCamera.setParameters(parameters);
         try {
-//            mCamera.setDisplayOrientation(90);
+            mCamera.setDisplayOrientation(90);
             mCamera.setPreviewDisplay(mSurfaceView.getHolder());
         } catch (IOException e) {
             Log.i(TAG, "错误--" + e.getMessage());
@@ -329,8 +335,10 @@ public class MemoryFileServiceManager {
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
                 try {
-                    if (Constants.IS_SEND_VIDEO_FRAME)
+                    imageView.setImageBitmap(fastYUVtoRGB.convertYUVtoRGB(data, Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT));
+                    if (Constants.IS_SEND_VIDEO_FRAME) {
                         putYUVData(data);
+                    }
                     camera.addCallbackBuffer(data);
                     Log.e(TAG, "采集 YUV 数据大小 " + Utils.getVideoFrameSize(data.length));
                 } catch (Exception e) {
@@ -349,7 +357,7 @@ public class MemoryFileServiceManager {
         mYUVQueue.add(buffer);
     }
 
-    public void sendBroadcast(String action,String content) {
+    public void sendBroadcast(String action, String content) {
         Intent intent = new Intent();
         intent.setAction(action);
         ComponentName componentName = new ComponentName("com.t01.sharevideostream",
@@ -361,4 +369,5 @@ public class MemoryFileServiceManager {
         intent.putExtras(extras);
         context.sendBroadcast(intent);
     }
+
 }

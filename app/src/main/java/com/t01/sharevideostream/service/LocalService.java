@@ -109,7 +109,6 @@ public class LocalService extends Service {
         }
     }
 
-
     private void readShareBufferMsg(int width, int height) {
         try {
             if (mMemoryFileService != null) {
