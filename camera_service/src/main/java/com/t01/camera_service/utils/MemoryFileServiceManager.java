@@ -313,6 +313,7 @@ public class MemoryFileServiceManager {
     }
 
     private void initCamera() {
+        try {
         if (mCamera != null) {
             mCamera.release();
             mCamera = null;
@@ -325,7 +326,7 @@ public class MemoryFileServiceManager {
         parameters.setPreviewFormat(ImageFormat.NV21);
         parameters.setPreviewSize(Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT);
         mCamera.setParameters(parameters);
-        try {
+
             mCamera.setDisplayOrientation(90);
             mCamera.setPreviewDisplay(mSurfaceView.getHolder());
         } catch (IOException e) {
