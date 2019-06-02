@@ -15,10 +15,12 @@
    - 本地相机未打开
 
      ![](<https://ws3.sinaimg.cn/large/005BYqpgly1g3m6zw5za0g30b60mwhdx.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn>)
+	 [效果图未显示](https://ws3.sinaimg.cn/large/005BYqpgly1g3m6zw5za0g30b60mwhdx.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn)
 
    - 本地相机打开
 
      ![](<https://ws3.sinaimg.cn/large/005BYqpgly1g3m75vcjohg30b60mw1l5.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn>)
+	 [效果图未显示请点击这里](https://ws3.sinaimg.cn/large/005BYqpgly1g3m75vcjohg30b60mw1l5.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn)
 
    ### 简要流程及示例代码说明
 
