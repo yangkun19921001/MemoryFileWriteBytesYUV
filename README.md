@@ -173,4 +173,20 @@
     }
       ```
 
+   9. 收到来至客服端停止写入 YUV 的命令
+
+      ```java
+        private void onHandleAction(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                /**
+                * 不需要子码流
+                */
+                case Constants.ACTION_CAMERE_CORE_HIDE:
+                        MemoryFileServiceManager.getInsta(context).setSendVideoFrame(false, intent);
+                    break;
+             }
+        }
+        
+      ```
+
       
