@@ -113,6 +113,10 @@ public class MemoryFileServiceManager {
             Constants.BIND_OTHER_SERVICE_PCK = extras.getString(Constants.Config.BIND_OTHER_SERVICE_PCK, "");
             //需要绑定对方服务的全路径
             Constants.BIND_OTHER_SERVICE_CLASS = extras.getString(Constants.Config.BIND_OTHER_SERVICE_CLASS, "");
+            //需要绑定对方广播的进程
+            Constants.BIND_OTHER_BROADCAST_PCK = extras.getString(Constants.Config.BIND_OTHER_BROADCAST_PCK, "");
+            //需要绑定对方广播的全路径
+            Constants.BIND_OTHER_BROADCAST_CLASS = extras.getString(Constants.Config.BIND_OTHER_BROADCAST_CLASS, "");
             //需要开启 Camera ID 的前置还是后置 0：后置 1：前置
             Constants.CAMERA_ID = extras.getInt(Constants.Config.CAMERA_ID, 0);
         }
@@ -361,8 +365,8 @@ public class MemoryFileServiceManager {
     public void sendBroadcast(String action, String content) {
         Intent intent = new Intent();
         intent.setAction(action);
-        ComponentName componentName = new ComponentName("com.t01.sharevideostream",
-                "com.t01.sharevideostream.revices.FeedBackReceiver");
+        ComponentName componentName = new ComponentName(Constants.Config.BIND_OTHER_BROADCAST_PCK,
+                Constants.Config.BIND_OTHER_BROADCAST_CLASS);
         intent.setComponent(componentName);
         Bundle extras = new Bundle();
         //设置绑定本地服务的全路径

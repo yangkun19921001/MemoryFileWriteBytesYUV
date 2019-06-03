@@ -33,6 +33,16 @@ public class Constants {
     public static String BIND_OTHER_SERVICE_CLASS = "";
 
     /**
+     * 接收反馈广播的进程
+     */
+    public static String BIND_OTHER_BROADCAST_PCK = "";
+
+    /**
+     * 接收反馈广播的全路径
+     */
+    public static String BIND_OTHER_BROADCAST_CLASS = "";
+
+    /**
      * YUV 缓存 5 帧
      */
     public static final int YUV_QUEUE_SIZE = 5;
@@ -70,9 +80,9 @@ public class Constants {
 
 
     /**
-     * 服务端发送过来的视频信息
+     * 发送过来的视频信息
      */
-    public interface Config{
+    public interface Config {
         /**
          * 0-后置，1-前置
          * 相机方向
@@ -97,6 +107,14 @@ public class Constants {
          * 绑定对方服务的全路径
          */
         String BIND_OTHER_SERVICE_CLASS = "BIND_OTHER_SERVICE_CLASS";
+        /**
+         * 绑定反馈广播的进程
+         */
+        String BIND_OTHER_BROADCAST_PCK = "BIND_OTHER_FEEDBACK_BROADCAST_PCK";
+        /**
+         * 绑定反馈广播的全路径
+         */
+        String BIND_OTHER_BROADCAST_CLASS = "BIND_OTHER_FEEDBACK_BROADCAST_CLASS";
 
     }
 

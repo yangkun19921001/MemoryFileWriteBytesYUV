@@ -92,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         extras.putString(Constants.Config.BIND_OTHER_SERVICE_PCK, getPackageName());
         //设置绑定本地服务的全路径
         extras.putString(Constants.Config.BIND_OTHER_SERVICE_CLASS, "com.t01.sharevideostream.service.LocalService");
+        //设置绑定本地广播进程
+        extras.putString(Constants.Config.BIND_OTHER_BROADCAST_PCK, "com.t01.sharevideostream");
+        //设置绑定本地广播的全路径
+        extras.putString(Constants.Config.BIND_OTHER_BROADCAST_CLASS, "com.t01.sharevideostream.revices.FeedBackReceiver");
         intent.putExtras(extras);
         sendBroadcast(intent);
     }
