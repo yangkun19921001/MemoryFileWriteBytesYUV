@@ -50,17 +50,20 @@
       ```java
           private void sendVideoFrame(Intent intent) {
               if (intent != null && intent.getExtras() != null) {
-                  Bundle extras = intent.getExtras();
-                  //获取需要预览的宽
-                  Constants.PREVIEWHEIGHT = extras.getInt(Constants.Config.PREVIEW_WIDTH, 1280);
-                  //获取需要预览的高
-                  Constants.PREVIEWHEIGHT = extras.getInt(Constants.Config.PREVIEW_HEIGHT, 720);
-                  //需要绑定对方服务的进程
-                  Constants.BIND_OTHER_SERVICE_PCK = extras.getString(Constants.Config.BIND_OTHER_SERVICE_PCK, "");
-                  //需要绑定对方服务的全路径
-                  Constants.BIND_OTHER_SERVICE_CLASS = extras.getString(Constants.Config.BIND_OTHER_SERVICE_CLASS, "");
-                  //需要开启 Camera ID 的前置还是后置 0：后置 1：前置
-                  Constants.CAMERA_ID = extras.getInt(Constants.Config.CAMERA_ID, 0);
+                //获取需要预览的宽
+                Constants.PREVIEWHEIGHT = extras.getInt(Constants.Config.PREVIEW_WIDTH, 1280);
+                //获取需要预览的高
+                Constants.PREVIEWHEIGHT = extras.getInt(Constants.Config.PREVIEW_HEIGHT, 720);
+                //需要绑定对方服务的进程
+                Constants.BIND_OTHER_SERVICE_PCK = extras.getString(Constants.Config.BIND_OTHER_SERVICE_PCK, "");
+                //需要绑定对方服务的全路径
+                Constants.BIND_OTHER_SERVICE_CLASS = extras.getString(Constants.Config.BIND_OTHER_SERVICE_CLASS, "");
+                //需要绑定对方广播的进程
+                Constants.BIND_OTHER_BROADCAST_PCK = extras.getString(Constants.Config.BIND_OTHER_BROADCAST_PCK, "");
+                //需要绑定对方广播的全路径
+                Constants.BIND_OTHER_BROADCAST_CLASS = extras.getString(Constants.Config.BIND_OTHER_BROADCAST_CLASS, "");
+                //需要开启 Camera ID 的前置还是后置 0：后置 1：前置
+                Constants.CAMERA_ID = extras.getInt(Constants.Config.CAMERA_ID, 0);
               }
           }
       ```
@@ -68,7 +71,7 @@
    3. 服务器是否开启相机，如果已经开启则不需要开启
 
       ```java
-              //是否摄像头
+              //是否开启摄像头
               if (mCamera == null)
                   openCamera();
       ```
@@ -152,18 +155,22 @@
    8. 开启成功或者失败等其他错误消息反馈给客服端
 
       ```java
-      //返回给客服端   
-      public void sendBroadcast(String action,String content) {
-              Intent intent = new Intent();
-              intent.setAction(action);
-              ComponentName componentName = new ComponentName("com.t01.sharevideostream",
-                      "com.t01.sharevideostream.revices.FeedBackReceiver");
-              intent.setComponent(componentName);
-              Bundle extras = new Bundle();
-              extras.putString(Constants.ACTION_FEEDBACK_CONTENT, content);
-              intent.putExtras(extras);
-              context.sendBroadcast(intent);
-          }
+        /**
+        * 把错误或者成功的消息反馈给客服端
+        * @param action
+        * @param content
+        */
+        public void sendBroadcast(String action, String content) {
+            Intent intent = new Intent();
+            intent.setAction(action);
+            ComponentName componentName = new ComponentName(Constants.Config.BIND_OTHER_BROADCAST_PCK,
+                 Constants.Config.BIND_OTHER_BROADCAST_CLASS);
+            intent.setComponent(componentName);
+            Bundle extras = new Bundle();
+            extras.putString(Constants.ACTION_FEEDBACK_CONTENT, content);
+            intent.putExtras(extras);
+            context.sendBroadcast(intent);
+    }
       ```
 
       
