@@ -1,4 +1,4 @@
-package com.t01.camera_common;
+package com.t01.camera_common.utils;
 
 import java.nio.ByteBuffer;
 

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.MemoryFile;
+import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 
 import com.t01.camera_common.Constants;
 import com.t01.camera_common.FastYUVtoRGB;
+import com.t01.camera_common.MemoryFileHelper;
 import com.t01.sharevideostream.service.IYuvDataListener;
 import com.t01.sharevideostream.service.LocalService;
 
@@ -37,6 +40,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_stop).setOnClickListener(this);
         mYuvShow = findViewById(R.id.iv_yuv);
         mFastYUVtoRGB = new FastYUVtoRGB(getApplicationContext());
+
+        MemoryFile memoryFile = MemoryFileHelper.createMemoryFile(Constants.MEMORY_FILE_NAME, Constants.MEMORY_SIZE);
+        ParcelFileDescriptor pfd = MemoryFileHelper.getParcelFileDescriptor(memoryFile);
+        MemoryFile memoryFile1 = MemoryFileHelper.openMemoryFile(pfd, Constants.MEMORY_SIZE, MemoryFileHelper.OPEN_READWRITE);
+        Log.e(TAG,getClass().toString());
+
     }
 
 
@@ -71,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == R.id.btn_stop) {
             sendBroadcast(Constants.ACTION_CAMERE_CORE_HIDE);
         }
-
     }
 
 

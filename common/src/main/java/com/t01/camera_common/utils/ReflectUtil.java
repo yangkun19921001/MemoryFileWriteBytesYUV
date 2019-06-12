@@ -1,4 +1,4 @@
-package com.t01.camera_common;
+package com.t01.camera_common.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -100,6 +100,22 @@ public class ReflectUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Method getMethod(String name,String clas) {
+        Method native_mmap = null;
+        try {
+            Class<?> c = Class.forName(clas);
+            Method[] ms = c.getDeclaredMethods();
+            for (int i = 0; ms != null && i < ms.length; i++) {
+                if (ms[i].getName().equals(name)) {
+                    native_mmap = ms[i];
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return native_mmap;
     }
 
     /**

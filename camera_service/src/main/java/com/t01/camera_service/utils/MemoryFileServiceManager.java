@@ -25,7 +25,7 @@ import android.widget.ImageView;
 import com.t01.camera_common.Constants;
 import com.t01.camera_common.FastYUVtoRGB;
 import com.t01.camera_common.MemoryFileHelper;
-import com.t01.camera_common.Utils;
+import com.t01.camera_common.utils.Utils;
 import com.t01.camera_common.bean.BufferBean;
 import com.t01.cameracore.ICameraCoreService;
 
@@ -92,11 +92,6 @@ public class MemoryFileServiceManager {
             context.unbindService(mCameraServiceConnection);
             sendBroadcast(Constants.ACTION_FEEDBACK, "断开连接");
             mSurfaceView.getHolder().removeCallback(null);
-/*            mCamera.setPreviewCallback(null);
-            mCamera.stopPreview();
-            mCamera.lock();
-            mCamera.release();
-            mCamera = null;*/
         } catch (Exception e) {
 
         }
@@ -362,6 +357,11 @@ public class MemoryFileServiceManager {
         mYUVQueue.add(buffer);
     }
 
+    /**
+     * 把错误或者成功的消息反馈给客服端
+     * @param action
+     * @param content
+     */
     public void sendBroadcast(String action, String content) {
         Intent intent = new Intent();
         intent.setAction(action);
@@ -369,7 +369,6 @@ public class MemoryFileServiceManager {
                 Constants.Config.BIND_OTHER_BROADCAST_CLASS);
         intent.setComponent(componentName);
         Bundle extras = new Bundle();
-        //设置绑定本地服务的全路径
         extras.putString(Constants.ACTION_FEEDBACK_CONTENT, content);
         intent.putExtras(extras);
         context.sendBroadcast(intent);
