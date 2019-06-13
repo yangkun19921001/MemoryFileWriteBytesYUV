@@ -16,6 +16,7 @@ import android.os.RemoteException;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -25,8 +26,8 @@ import android.widget.ImageView;
 import com.t01.camera_common.Constants;
 import com.t01.camera_common.FastYUVtoRGB;
 import com.t01.camera_common.MemoryFileHelper;
-import com.t01.camera_common.utils.Utils;
 import com.t01.camera_common.bean.BufferBean;
+import com.t01.camera_common.utils.Utils;
 import com.t01.cameracore.ICameraCoreService;
 
 import java.io.IOException;
@@ -243,6 +244,7 @@ public class MemoryFileServiceManager {
             if (!Settings.canDrawOverlays(context)) {
                 //启动Activity让用户授权
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 return;
             } else {
@@ -278,15 +280,19 @@ public class MemoryFileServiceManager {
             } else {
                 LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_PHONE;
             }
+
+            Display display = mWindowManager.getDefaultDisplay();
+            int height = display.getHeight();
+            int width = display.getWidth();
             WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
-                    400,
-                    400,
+                    width / 4,
+                    height / 4,
                     LAYOUT_FLAG,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, //给屏幕焦点
                     PixelFormat.TRANSLUCENT
             );
 
-            layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
+            layoutParams.gravity = Gravity.RIGHT | Gravity.TOP;
 
             mWindowManager.addView(mSurfaceView, layoutParams);
             mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -313,20 +319,23 @@ public class MemoryFileServiceManager {
 
     private void initCamera() {
         try {
-        if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
-        }
-        if (null == mCamera)
-            mCamera = Camera.open(Constants.CAMERA_ID);
-        Log.i(TAG, "onCreate: open");
-        Camera.Parameters parameters = mCamera.getParameters();
-        //指定 NV21 格式
-        parameters.setPreviewFormat(ImageFormat.NV21);
-        parameters.setPreviewSize(Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT);
-        mCamera.setParameters(parameters);
+            if (mCamera != null) {
+                mCamera.release();
+                mCamera = null;
+            }
+            if (null == mCamera)
+                mCamera = Camera.open(Constants.CAMERA_ID);
+            Log.i(TAG, "onCreate: open");
+            Camera.Parameters parameters = mCamera.getParameters();
+            //指定 NV21 格式
+            parameters.setPreviewFormat(ImageFormat.NV21);
+            parameters.setPreviewSize(Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT);
+            parameters.setPreviewFpsRange(15,30);
+            mCamera.setParameters(parameters);
 
-            mCamera.setDisplayOrientation(90);
+            //执法仪这里不需要旋转 90°
+//            mCamera.setDisplayOrientation(90);
+
             mCamera.setPreviewDisplay(mSurfaceView.getHolder());
         } catch (IOException e) {
             Log.i(TAG, "错误--" + e.getMessage());
@@ -350,7 +359,6 @@ public class MemoryFileServiceManager {
     }
 
     public void putYUVData(byte[] buffer) {
-
         if (mYUVQueue.size() >= Constants.YUV_QUEUE_SIZE) {
             mYUVQueue.poll();
         }
@@ -359,6 +367,7 @@ public class MemoryFileServiceManager {
 
     /**
      * 把错误或者成功的消息反馈给客服端
+     *
      * @param action
      * @param content
      */
@@ -373,5 +382,4 @@ public class MemoryFileServiceManager {
         intent.putExtras(extras);
         context.sendBroadcast(intent);
     }
-
 }

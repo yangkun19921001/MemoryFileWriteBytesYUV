@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.MemoryFile;
-import android.os.ParcelFileDescriptor;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +15,7 @@ import android.widget.ImageView;
 
 import com.t01.camera_common.Constants;
 import com.t01.camera_common.FastYUVtoRGB;
-import com.t01.camera_common.MemoryFileHelper;
+import com.t01.camera_common.utils.Utils;
 import com.t01.sharevideostream.service.IYuvDataListener;
 import com.t01.sharevideostream.service.LocalService;
 
@@ -40,12 +39,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_stop).setOnClickListener(this);
         mYuvShow = findViewById(R.id.iv_yuv);
         mFastYUVtoRGB = new FastYUVtoRGB(getApplicationContext());
-
-        MemoryFile memoryFile = MemoryFileHelper.createMemoryFile(Constants.MEMORY_FILE_NAME, Constants.MEMORY_SIZE);
-        ParcelFileDescriptor pfd = MemoryFileHelper.getParcelFileDescriptor(memoryFile);
-        MemoryFile memoryFile1 = MemoryFileHelper.openMemoryFile(pfd, Constants.MEMORY_SIZE, MemoryFileHelper.OPEN_READWRITE);
-        Log.e(TAG,getClass().toString());
-
     }
 
 
@@ -57,8 +50,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             myBinder.getYuvData(new IYuvDataListener() {
                 @Override
                 public void onYUVData(byte[] output, int width, int height) {
-//                    Log.e(TAG, "收到 YUV 数据大小 " + Utils.getVideoFrameSize(output.length));
-                    mYuvShow.setImageBitmap(mFastYUVtoRGB.rotaingImageView(90,mFastYUVtoRGB.convertYUVtoRGB(output, width, height)));
+                    Log.e(TAG, "时间："+ SystemClock.currentThreadTimeMillis()+" " +"收到 YUV 数据大小 " + Utils.getVideoFrameSize(output.length));
+                    //执法仪本身就是 横屏 不需要在旋转了
+                    mYuvShow.setImageBitmap(mFastYUVtoRGB.convertYUVtoRGB(output, width, height));
+//                    mYuvShow.setImageBitmap(mFastYUVtoRGB.rotaingImageView(90,mFastYUVtoRGB.convertYUVtoRGB(output, width, height)));
                 }
             });
         }

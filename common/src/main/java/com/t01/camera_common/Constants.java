@@ -45,7 +45,7 @@ public class Constants {
     /**
      * YUV 缓存 5 帧
      */
-    public static final int YUV_QUEUE_SIZE = 5;
+    public static final int YUV_QUEUE_SIZE = 2;
     /**
      * 客服端发过来的心跳包
      */
@@ -72,7 +72,7 @@ public class Constants {
     /**
      * 内存文件中的缓存的大小
      */
-    public static final int MEMORY_SIZE = BUFFER_SIZE * 5;
+    public static final int MEMORY_SIZE = BUFFER_SIZE * YUV_QUEUE_SIZE;
     /**
      * 内存文件的名称
      */

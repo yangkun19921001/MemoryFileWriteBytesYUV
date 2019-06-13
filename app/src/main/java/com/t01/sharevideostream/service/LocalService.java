@@ -61,13 +61,14 @@ public class LocalService extends Service {
         @Override
         public void addExportMemoryFile(ParcelFileDescriptor pfd, int w, int h, int memorySize) throws RemoteException {
             //拿到服务端创建的内存块 ，客服端去读写
-           Log.i(TAG,"收到服务端返回过来的内存块信息-->" + "预览宽：" +w + " 预览高：" + h + " 内存大小：" + memorySize);
+            Log.i(TAG, "收到服务端返回过来的内存块信息-->" + "预览宽：" + w + " 预览高：" + h + " 内存大小：" + memorySize);
             mMemoryFileService = MemoryFileHelper.openMemoryFile(pfd, memorySize, MemoryFileHelper.OPEN_READWRITE);
-            mBufferBean = new BufferBean(memorySize);
-            sendMessage(w,h);
+//            mBufferBean = new BufferBean(memorySize);
+            mBufferBean = new BufferBean(w * h * 3 / 2);
+            sendMessage(w, h);
         }
 
-        public  void getYuvData(IYuvDataListener iYuvDataListener){
+        public void getYuvData(IYuvDataListener iYuvDataListener) {
             mIYuvDataListener = iYuvDataListener;
         }
     }
@@ -76,8 +77,8 @@ public class LocalService extends Service {
         Message obtain = Message.obtain();
         Bundle bundle = new Bundle();
         obtain.what = MEG_READ_BUF;
-        bundle.putInt(Constants.Config.PREVIEW_HEIGHT,h);
-        bundle.putInt(Constants.Config.PREVIEW_WIDTH,w);
+        bundle.putInt(Constants.Config.PREVIEW_HEIGHT, h);
+        bundle.putInt(Constants.Config.PREVIEW_WIDTH, w);
         obtain.setData(bundle);
         mHandler.sendMessage(obtain);
     }
@@ -86,8 +87,8 @@ public class LocalService extends Service {
         Message obtain = Message.obtain();
         obtain.what = MEG_READ_BUF;
         Bundle bundle = new Bundle();
-        bundle.putInt(Constants.Config.PREVIEW_HEIGHT,height);
-        bundle.putInt(Constants.Config.PREVIEW_WIDTH,width);
+        bundle.putInt(Constants.Config.PREVIEW_HEIGHT, height);
+        bundle.putInt(Constants.Config.PREVIEW_WIDTH, width);
         obtain.setData(bundle);
         mHandler.sendMessageDelayed(obtain, delay);
     }
@@ -99,10 +100,10 @@ public class LocalService extends Service {
             super.handleMessage(msg);
             switch (msg.what) {
                 case MEG_READ_BUF:
-                    if (msg.getData() != null){
+                    if (msg.getData() != null) {
                         int width = msg.getData().getInt(Constants.Config.PREVIEW_WIDTH);
                         int height = msg.getData().getInt(Constants.Config.PREVIEW_HEIGHT);
-                        readShareBufferMsg(width,height);
+                        readShareBufferMsg(width, height);
                     }
                     break;
             }
@@ -114,18 +115,18 @@ public class LocalService extends Service {
             if (mMemoryFileService != null) {
                 mMemoryFileService.readBytes(mBufferBean.isCanRead, 0, 0, 1);
                 Log.d(TAG, "readShareBufferMsg isCanRead:" + mBufferBean.isCanRead[0] + ";length:"
-                        + mBufferBean.mBuffer.length + ":测试数据 ：" +  mBufferBean.mBuffer[2]);
+                        + mBufferBean.mBuffer.length + ":测试数据 ：" + mBufferBean.mBuffer[2]);
                 if (mBufferBean.isCanRead[0] == 1) {
                     mMemoryFileService.readBytes(mBufferBean.mBuffer, 0, 0, mBufferBean.mBuffer.length);
                     // 显示
-                    showCameraBuff(mBufferBean.mBuffer,width,height);
+                    showCameraBuff(mBufferBean.mBuffer, width, height);
                     mBufferBean.isCanRead[0] = 0;
                     mMemoryFileService.writeBytes(mBufferBean.isCanRead, 0, 0, 1);
                 } else {
                     Log.d(TAG, "readShareBufferMsg isCanRead:" + mBufferBean.isCanRead[0] + ";length:"
                             + mBufferBean.mBuffer.length);
                 }
-                sendMessageDelayed(width,height,20);
+                sendMessageDelayed(width, height, 20);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,6 +135,6 @@ public class LocalService extends Service {
 
     private void showCameraBuff(byte[] mBuffer, int width, int height) {
         if (mIYuvDataListener != null)
-            mIYuvDataListener.onYUVData(mBuffer,width,height);
+            mIYuvDataListener.onYUVData(mBuffer, width, height);
     }
 }
