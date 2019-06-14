@@ -45,7 +45,7 @@ public class Constants {
     /**
      * YUV 缓存 5 帧
      */
-    public static final int YUV_QUEUE_SIZE = 2;
+    public static final int YUV_QUEUE_SIZE = 5;
     /**
      * 客服端发过来的心跳包
      */

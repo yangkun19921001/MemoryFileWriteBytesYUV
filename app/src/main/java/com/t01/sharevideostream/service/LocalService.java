@@ -2,6 +2,8 @@ package com.t01.sharevideostream.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -9,7 +11,9 @@ import android.os.MemoryFile;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.t01.camera_common.Constants;
@@ -19,6 +23,7 @@ import com.t01.cameracore.ICameraCoreService;
 
 import java.io.IOException;
 
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class LocalService extends Service {
 
     private MyBinder mMyBinder = null;
@@ -33,6 +38,7 @@ public class LocalService extends Service {
     private IYuvDataListener mIYuvDataListener;
     private BufferBean mBufferBean;
 
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -44,6 +50,7 @@ public class LocalService extends Service {
         super.onCreate();
         mMyBinder = new MyBinder();
         mHandler = new MyHandler();
+
 
     }
 
@@ -61,7 +68,7 @@ public class LocalService extends Service {
         @Override
         public void addExportMemoryFile(ParcelFileDescriptor pfd, int w, int h, int memorySize) throws RemoteException {
             //拿到服务端创建的内存块 ，客服端去读写
-            Log.i(TAG, "收到服务端返回过来的内存块信息-->" + "预览宽：" + w + " 预览高：" + h + " 内存大小：" + memorySize);
+            Log.i(TAG, "时间："+ SystemClock.currentThreadTimeMillis()+"--"+ "收到服务端返回过来的内存块信息-->" + "预览宽：" + w + " 预览高：" + h + " 内存大小：" + memorySize);
             mMemoryFileService = MemoryFileHelper.openMemoryFile(pfd, memorySize, MemoryFileHelper.OPEN_READWRITE);
 //            mBufferBean = new BufferBean(memorySize);
             mBufferBean = new BufferBean(w * h * 3 / 2);

@@ -21,10 +21,8 @@ import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import com.t01.camera_common.Constants;
-import com.t01.camera_common.FastYUVtoRGB;
 import com.t01.camera_common.MemoryFileHelper;
 import com.t01.camera_common.bean.BufferBean;
 import com.t01.camera_common.utils.Utils;
@@ -52,8 +50,6 @@ public class MemoryFileServiceManager {
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private WindowManager mWindowManager;
-    private ImageView imageView;
-    private FastYUVtoRGB fastYUVtoRGB;
 
     public static MemoryFileServiceManager getInsta(Context context) {
         MemoryFileServiceManager.context = context.getApplicationContext();
@@ -94,7 +90,7 @@ public class MemoryFileServiceManager {
             sendBroadcast(Constants.ACTION_FEEDBACK, "断开连接");
             mSurfaceView.getHolder().removeCallback(null);
         } catch (Exception e) {
-
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -261,8 +257,6 @@ public class MemoryFileServiceManager {
              */
             onBackgroup();
         }
-
-        fastYUVtoRGB = new FastYUVtoRGB(context);
     }
 
     /**
@@ -272,7 +266,6 @@ public class MemoryFileServiceManager {
         try {
             //开启悬浮窗
             mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            imageView = new ImageView(context);
             mSurfaceView = new SurfaceView(context);
             int LAYOUT_FLAG;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -325,12 +318,13 @@ public class MemoryFileServiceManager {
             }
             if (null == mCamera)
                 mCamera = Camera.open(Constants.CAMERA_ID);
+//                mCamera = Camera.open(1);
             Log.i(TAG, "onCreate: open");
             Camera.Parameters parameters = mCamera.getParameters();
             //指定 NV21 格式
             parameters.setPreviewFormat(ImageFormat.NV21);
             parameters.setPreviewSize(Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT);
-            parameters.setPreviewFpsRange(15,30);
+            parameters.setPreviewFpsRange(25, 30);
             mCamera.setParameters(parameters);
 
             //执法仪这里不需要旋转 90°
@@ -344,7 +338,6 @@ public class MemoryFileServiceManager {
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
                 try {
-                    imageView.setImageBitmap(fastYUVtoRGB.convertYUVtoRGB(data, Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT));
                     if (Constants.IS_SEND_VIDEO_FRAME) {
                         putYUVData(data);
                     }

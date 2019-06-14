@@ -4,9 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,11 +21,16 @@ import com.t01.camera_common.utils.Utils;
 import com.t01.sharevideostream.service.IYuvDataListener;
 import com.t01.sharevideostream.service.LocalService;
 
+import java.util.Date;
+
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String TAG = this.getClass().getSimpleName();
     private ImageView mYuvShow;
     private FastYUVtoRGB mFastYUVtoRGB;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             myBinder.getYuvData(new IYuvDataListener() {
                 @Override
                 public void onYUVData(byte[] output, int width, int height) {
-                    Log.e(TAG, "时间："+ SystemClock.currentThreadTimeMillis()+" " +"收到 YUV 数据大小 " + Utils.getVideoFrameSize(output.length));
+                    Log.e(TAG, "时间：" + sdf.format(new Date()) + " " + "收到 YUV 数据大小 " + Utils.getVideoFrameSize(output.length));
                     //执法仪本身就是 横屏 不需要在旋转了
                     mYuvShow.setImageBitmap(mFastYUVtoRGB.convertYUVtoRGB(output, width, height));
 //                    mYuvShow.setImageBitmap(mFastYUVtoRGB.rotaingImageView(90,mFastYUVtoRGB.convertYUVtoRGB(output, width, height)));
@@ -63,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "-------------------- onServiceDisconnected------------------");
         }
     };
-
-
-
 
 
     @Override
