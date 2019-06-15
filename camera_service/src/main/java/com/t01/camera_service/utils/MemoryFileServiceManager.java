@@ -324,12 +324,9 @@ public class MemoryFileServiceManager {
             //指定 NV21 格式
             parameters.setPreviewFormat(ImageFormat.NV21);
             parameters.setPreviewSize(Constants.PREVIEWWIDTH, Constants.PREVIEWHEIGHT);
-            parameters.setPreviewFpsRange(25, 30);
             mCamera.setParameters(parameters);
-
             //执法仪这里不需要旋转 90°
 //            mCamera.setDisplayOrientation(90);
-
             mCamera.setPreviewDisplay(mSurfaceView.getHolder());
         } catch (IOException e) {
             Log.i(TAG, "错误--" + e.getMessage());

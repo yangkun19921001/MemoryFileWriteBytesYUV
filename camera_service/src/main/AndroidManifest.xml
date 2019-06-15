@@ -22,6 +22,7 @@
         <!--接收客服端发送过来的消息-->
         <receiver
             android:name=".revices.ActionReceiver"
+            android:process=":service"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.t01.action.CAMERE_CORE_SHOW" />
