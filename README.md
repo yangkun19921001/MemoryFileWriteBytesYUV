@@ -14,8 +14,8 @@
 
    - 本地相机未打开
 
-     ![](<https://ws3.sinaimg.cn/large/005BYqpgly1g3m6zw5za0g30b60mwhdx.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn>)
-	 [效果图未显示](https://ws3.sinaimg.cn/large/005BYqpgly1g3m6zw5za0g30b60mwhdx.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn)
+     ![](<https://ws3.sinaimg.cn/large/005BYqpgly1g41qnz1nlig309y0lce89.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn>)
+	 [效果图未显示请点击这里](<https://ws3.sinaimg.cn/large/005BYqpgly1g41qnz1nlig309y0lce89.jpg?referrer=https://cdn.sinaimg.cn.52ecy.cn>)
 
    - 本地相机打开
 

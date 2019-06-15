@@ -364,8 +364,8 @@ public class MemoryFileServiceManager {
     public void sendBroadcast(String action, String content) {
         Intent intent = new Intent();
         intent.setAction(action);
-        ComponentName componentName = new ComponentName(Constants.Config.BIND_OTHER_BROADCAST_PCK,
-                Constants.Config.BIND_OTHER_BROADCAST_CLASS);
+        ComponentName componentName = new ComponentName(Constants.BIND_OTHER_BROADCAST_PCK,
+                Constants.BIND_OTHER_BROADCAST_CLASS);
         intent.setComponent(componentName);
         Bundle extras = new Bundle();
         extras.putString(Constants.ACTION_FEEDBACK_CONTENT, content);
